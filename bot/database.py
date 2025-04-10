@@ -1,17 +1,28 @@
-import sqlite3
-import os
+import os  # Импорт os для работы с файловой системой
+import sqlite3  # Импорт sqlite3 для работы с базой данных
 
-DB_PATH = "sleep_tracker.db"
+DB_PATH = "sleep_tracker.db"  # Путь к файлу базы данных
+
+def is_valid_database(db_path):
+    """Проверяет, является ли файл корректной базой данных SQLite."""
+    try:
+        conn = sqlite3.connect(db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+        conn.close()
+        return True
+    except sqlite3.DatabaseError:
+        return False
 
 def init_db():
     """Инициализация базы данных. Создаёт файл, если его нет, и таблицу sleep_sessions."""
-    # Проверка, является ли существующий файл корректной базой данных
     if os.path.exists(DB_PATH) and not is_valid_database(DB_PATH):
         raise sqlite3.DatabaseError(f"Файл {DB_PATH} не является базой данных SQLite. Удалите его и попробуйте снова.")
 
-    # Подключение к базе данных и создание таблицы, если её нет
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
+
+    # Создание таблицы, если её нет
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS sleep_sessions (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,6 +34,20 @@ def init_db():
         end_comment TEXT
     )
     """)
+
+    # Добавление недостающих столбцов, если таблица уже существует
+    try:
+        cursor.execute("ALTER TABLE sleep_sessions ADD COLUMN start_comment TEXT")
+    except sqlite3.OperationalError:
+        # Столбец уже существует
+        pass
+
+    try:
+        cursor.execute("ALTER TABLE sleep_sessions ADD COLUMN end_comment TEXT")
+    except sqlite3.OperationalError:
+        # Столбец уже существует
+        pass
+
     conn.commit()
     conn.close()
 
@@ -49,19 +74,8 @@ def get_sessions_for_user(user_id):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("""
-    SELECT start_time, end_time, duration FROM sleep_sessions WHERE user_id = ?
+    SELECT start_time, start_comment, end_time, end_comment, duration FROM sleep_sessions WHERE user_id = ?
     """, (user_id,))
     rows = cursor.fetchall()
     conn.close()
     return rows
-
-def is_valid_database(db_path):
-    """Проверяет, является ли файл корректной базой данных SQLite."""
-    try:
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
-        cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-        conn.close()
-        return True
-    except sqlite3.DatabaseError:
-        return False
