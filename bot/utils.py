@@ -31,5 +31,5 @@ def generate_excel_and_chart(sessions, user_id):
     return excel_path, chart_path
 
 def format_datetime(dt):
-    """Форматирует дату и время в формате dd.mm.yyyy HH:MM."""
-    return dt.strftime("%d.%m.%Y %H:%M")
+    """Форматирует дату и время в формате dd.mm HH:MM (без года)."""
+    return dt.strftime("%d.%m %H:%M")

@@ -6,39 +6,53 @@ from bot.database import save_session, get_sessions_for_user
 user_sessions = {}
 
 def start_sleep(user_id):
-    """Начало сна для пользователя."""
+    """
+    Начало сна для пользователя.
+    """
     sleep_session = Sleep(start_time=datetime.now())
     user_sessions[user_id] = sleep_session
     return f"Сон начат: {format_datetime(sleep_session.start_time)}"
 
 def end_sleep(user_id):
-    """Завершение сна для пользователя."""
+    """
+    Завершение сна для пользователя.
+    """
     if user_id not in user_sessions or not user_sessions[user_id].start_time:
         return "Вы еще не начали сон. Пожалуйста, начните сон."
     
     sleep_session = user_sessions[user_id]
     sleep_session.set_times(end_time=datetime.now())
     save_session(user_id, sleep_session)
-    return f"Сон завершен: {sleep_session.get_report()}"
+
+    # Формируем отчет после добавления комментария
+    return sleep_session.get_report()
 
 def add_start_comment(user_id, comment):
-    """Добавляет комментарий к началу сна."""
+    """
+    Добавляет комментарий к началу сна.
+    """
     if user_id in user_sessions:
         user_sessions[user_id].start_comment = comment
 
 def add_end_comment(user_id, comment):
-    """Добавляет комментарий к концу сна."""
+    """
+    Добавляет комментарий к концу сна.
+    """
     if user_id in user_sessions:
         user_sessions[user_id].end_comment = comment
 
 def add_missed_sleep(user_id, start_time, end_time):
-    """Добавляет пропущенный сон."""
+    """
+    Добавляет пропущенный сон.
+    """
     missed_sleep = Sleep(start_time=start_time, end_time=end_time)
     save_session(user_id, missed_sleep)
     return "Пропущенный сон добавлен."
 
 def get_current_duration(user_id):
-    """Текущая длительность сна."""
+    """
+    Текущая длительность сна.
+    """
     if user_id not in user_sessions or not user_sessions[user_id].start_time:
         return "Сон еще не начат."
     
@@ -52,7 +66,9 @@ def get_current_duration(user_id):
     return "Сон уже завершен."
 
 def get_last_sleep_duration(user_id):
-    """Время с момента последнего сна."""
+    """
+    Время с момента последнего сна.
+    """
     sessions = get_sessions_for_user(user_id)
     if not sessions:
         return "Данных о последнем сне нет."
@@ -67,7 +83,9 @@ def get_last_sleep_duration(user_id):
     return f"С момента последнего сна прошло: {int(hours)}ч {int(minutes)}м."
 
 def generate_daily_statistics(user_id):
-    """Генерирует статистику за текущий день."""
+    """
+    Генерирует статистику за текущий день.
+    """
     sessions = get_sessions_for_user(user_id)
     if not sessions:
         return "Данных за сегодня нет."
