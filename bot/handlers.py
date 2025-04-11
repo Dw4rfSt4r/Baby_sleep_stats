@@ -102,42 +102,44 @@ async def handle_message(update: Update, context):
         action = user_state[user_id]["action"]
         if action == "start_sleep":
             user_state[user_id]["start_comment"] = update.message.text
-            await send_sleep_start_message(user_id, update.message)
+            await send_sleep_start_message(user_id, update)
         elif action == "add_end_comment":
             user_state[user_id]["end_comment"] = update.message.text
-            await send_sleep_end_message(user_id, update.message)
+            await send_sleep_end_message(user_id, update)
 
-async def send_sleep_start_message(user_id, message_or_query):
+async def send_sleep_start_message(user_id, update_or_query):
     """Отправляет сообщение о начале сна и возвращает в меню."""
     start_time = user_state[user_id]["start_time"].strftime("%H:%M:%S")
     if "awaiting_comment" in user_state[user_id]:
         del user_state[user_id]["awaiting_comment"]
 
-    # Отправляем сообщение в зависимости от типа объекта
-    if isinstance(message_or_query, Update) and message_or_query.message:
-        await message_or_query.message.reply_text(f"Сон начат в {start_time}.")
-    elif hasattr(message_or_query, "message") and message_or_query.message:
-        await message_or_query.message.reply_text(f"Сон начат в {start_time}.")
+    # Отправляем сообщение в зависимости от объекта
+    if hasattr(update_or_query, "message") and update_or_query.message:
+        await update_or_query.message.reply_text(f"Сон начат в {start_time}.")
+    elif hasattr(update_or_query, "reply_text"):
+        await update_or_query.reply_text(f"Сон начат в {start_time}.")
     
-    await show_main_menu(message_or_query)
+    # Показываем главное меню
+    await show_main_menu(update_or_query)
 
-async def send_sleep_end_message(user_id, message_or_query):
+async def send_sleep_end_message(user_id, update_or_query):
     """Отправляет сообщение о завершении сна и возвращает в меню."""
     user_state[user_id]["last_sleep_end"] = user_state[user_id]["end_time"]
     end_time = user_state[user_id]["end_time"].strftime("%H:%M:%S")
     if "awaiting_comment" in user_state[user_id]:
         del user_state[user_id]["awaiting_comment"]
 
-    # Отправляем сообщение в зависимости от типа объекта
-    if isinstance(message_or_query, Update) and message_or_query.message:
-        await message_or_query.message.reply_text(f"Сон завершен в {end_time}.")
-    elif hasattr(message_or_query, "message") and message_or_query.message:
-        await message_or_query.message.reply_text(f"Сон завершен в {end_time}.")
+    # Отправляем сообщение в зависимости от объекта
+    if hasattr(update_or_query, "message") and update_or_query.message:
+        await update_or_query.message.reply_text(f"Сон завершен в {end_time}.")
+    elif hasattr(update_or_query, "reply_text"):
+        await update_or_query.reply_text(f"Сон завершен в {end_time}.")
     
-    await save_sleep_session(user_id, message_or_query)
-    await show_main_menu(message_or_query)
+    # Сохраняем данные и показываем главное меню
+    await save_sleep_session(user_id, update_or_query)
+    await show_main_menu(update_or_query)
 
-async def save_sleep_session(user_id, message_or_query):
+async def save_sleep_session(user_id, update_or_query):
     """Сохраняет данные о сеансе сна в базу."""
     from bot.database import save_session
     start_time = user_state[user_id]["start_time"]
