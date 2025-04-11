@@ -1,5 +1,3 @@
-from datetime import datetime, timedelta
-
 class Sleep:
     def __init__(self, start_time=None, end_time=None, start_comment=None, end_comment=None):
         self.start_time = start_time
@@ -26,8 +24,8 @@ class Sleep:
         """Возвращает отчет о сеансе сна."""
         duration = self.duration
         duration_str = f"{duration.seconds // 3600}ч {duration.seconds % 3600 // 60}м" if duration else "Неизвестно"
-        return (f"Начало сна: {self.start_time.strftime('%d.%m.%Y %H:%M:%S')}\n"
-                f"Конец сна: {self.end_time.strftime('%d.%m.%Y %H:%M:%S') if self.end_time else 'Еще не завершено'}\n"
+        return (f"Начало сна: {self.start_time.strftime('%d.%m.%Y %H:%M')}\n"
+                f"Конец сна: {self.end_time.strftime('%d.%m.%Y %H:%M') if self.end_time else 'Еще не завершено'}\n"
                 f"Длительность: {duration_str}\n"
                 f"Комментарий к началу: {self.start_comment}\n"
                 f"Комментарий к концу: {self.end_comment}")
