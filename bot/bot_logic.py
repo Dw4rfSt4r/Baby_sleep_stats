@@ -84,7 +84,7 @@ def generate_daily_statistics(user_id):
         elif session.start_time >= start_of_day:
             day_naps.append(session)
 
-    # Формируем отчет
+    # Формируем  отчет
     report = "Ночной сон:\n"
     report += "\n".join([f"{format_datetime(s.start_time)} - {format_datetime(s.end_time)}" for s in night_sleep])
     report += "\n\nДневные сны:\n"
