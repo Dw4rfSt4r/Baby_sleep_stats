@@ -1,0 +1,59 @@
+[project]
+name = "baby-sleep-stats"
+version = "0.1.0"
+description = "Приложение для отслеживания и анализа сна детей"
+authors = [
+    {name = "Ivan Khavinson", email = "havinsonivan@gmail.com"}
+]
+dependencies = [
+    "python-telegram-bot>=20.0",
+    "pandas>=2.0.0",
+]
+requires-python = ">=3.8"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "ruff>=0.3.0",
+    "mypy>=1.0.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+# Включаем все правила по умолчанию
+select = ["E", "F", "I", "N", "W", "B", "UP", "PL", "RUF"]
+# Игнорируем некоторые правила
+ignore = []
+
+# То же, что было в black
+line-length = 88
+target-version = "py38"
+
+# Автоматическое исправление
+fix = true
+# Сортировка импортов
+fix-only = ["I001"]
+
+[tool.ruff.format]
+# Настройки форматирования (аналог black)
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
